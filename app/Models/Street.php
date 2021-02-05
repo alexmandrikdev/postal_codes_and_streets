@@ -12,4 +12,9 @@ class Street extends Model
     protected $guarded = ['id'];
 
     protected $hidden = ['created_at', 'updated_at'];
+
+    public function postalCode2()
+    {
+        return $this->hasOne(PostalCode::class, 'postal_code', 'postal_code');
+    }
 }
