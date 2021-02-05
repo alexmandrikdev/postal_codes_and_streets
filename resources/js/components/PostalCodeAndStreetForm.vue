@@ -129,8 +129,8 @@ export default {
         };
 
         if (this.type === 'postalCode') {
-            validations.name.minLength = minLength(6);
-            validations.name.maxLength = maxLength(6);
+            validations.name.minLength = minLength(5);
+            validations.name.maxLength = maxLength(5);
             validations.name.numeric = numeric;
         }
 
@@ -150,7 +150,7 @@ export default {
                 : !this.$v.name.numeric
                 ? 'The postal code must be numeric'
                 : !this.$v.name.minLength || !this.$v.name.maxLength
-                ? 'The postal code must be 6 characters'
+                ? 'The postal code must be 5 digit'
                 : '';
         },
     },
