@@ -1,5 +1,11 @@
 <template>
-    <router-view />
+    <div>
+        <b-navbar type="dark" variant="info">
+            <b-navbar-brand to="/">Postal Codes and Streets</b-navbar-brand>
+        </b-navbar>
+
+        <router-view />
+    </div>
 </template>
 
 <script>
