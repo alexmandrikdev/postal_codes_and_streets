@@ -164,6 +164,27 @@ export default {
             if (this.$v.$anyError) {
                 return;
             }
+
+            if (this.type === 'postalCode') {
+                axios
+                    .post('/api/v1/postal_codes', {
+                        postal_code: this.name,
+                        locality: this.locality,
+                        latitude: this.latitude,
+                        longitude: this.longitude,
+                    })
+                    .then(() => {
+                        this.resetForm();
+                    });
+            }
+        },
+        resetForm() {
+            this.name = '';
+            this.locality = '';
+            this.latitude = '';
+            this.longitude = '';
+
+            this.$v.$reset();
         },
         latitudeOrLongitudeInvalidFeedback(type) {
             return !this.$v[type].decimal
