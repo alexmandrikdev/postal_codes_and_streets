@@ -24,7 +24,7 @@ class PostalCodeStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'postal_code' => 'required|digits:5',
+            'postal_code' => 'required|digits:5|unique:postal_codes,postal_code',
             'locality' => 'required|max:255',
             'latitude' => 'nullable|numeric|min:-90|max:90',
             'longitude' => 'nullable|numeric|min:-180|max:180',

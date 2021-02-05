@@ -104,6 +104,7 @@ export default {
             localityOrStreet: '',
             latitude: '',
             longitude: '',
+            postalCodehasAlreadyBeenTaken: false,
         };
     },
     validations: {
@@ -141,6 +142,8 @@ export default {
                 ? 'The postal code must be numeric'
                 : !this.$v.postalCode.minLength || !this.$v.postalCode.maxLength
                 ? 'The postal code must be 5 digit'
+                : this.postalCodehasAlreadyBeenTaken
+                ? 'The postal code has already added'
                 : '';
         },
         localityOrStreetInvalidFeedback() {
@@ -153,6 +156,10 @@ export default {
     },
     methods: {
         validateState(name) {
+            if (name === 'postalCode' && this.postalCodehasAlreadyBeenTaken) {
+                return false;
+            }
+
             const { $dirty, $error } = this.$v[name];
             return $dirty ? !$error : null;
         },
@@ -172,6 +179,16 @@ export default {
                     })
                     .then(() => {
                         this.resetForm();
+                    })
+                    .catch(({ response }) => {
+                        if (
+                            response.status === 422 &&
+                            response.data.errors.postal_code &&
+                            response.data.errors.postal_code[0] ===
+                                'The postal code has already been taken.'
+                        ) {
+                            this.postalCodehasAlreadyBeenTaken = true;
+                        }
                     });
             }
 
@@ -193,6 +210,8 @@ export default {
             this.localityOrStreet = '';
             this.latitude = '';
             this.longitude = '';
+
+            this.postalCodehasAlreadyBeenTaken = false;
 
             this.$v.$reset();
         },
