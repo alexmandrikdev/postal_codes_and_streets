@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\PostalCode;
+use App\Models\Street;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,5 +16,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         PostalCode::factory(100)->create();
+        Street::factory(100)->create();
     }
 }
