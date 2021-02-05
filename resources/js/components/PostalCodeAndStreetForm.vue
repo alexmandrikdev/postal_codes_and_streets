@@ -44,7 +44,7 @@
             <b-form-group class="mx-2">
                 <b-form-input
                     v-model="$v.latitude.$model"
-                    placeholder="Latitude"
+                    placeholder="Latitude (optional)"
                     :state="validateState('latitude')"
                 />
 
@@ -56,7 +56,7 @@
             <b-form-group class="mx-2">
                 <b-form-input
                     v-model="$v.longitude.$model"
-                    placeholder="Longitude"
+                    placeholder="Longitude (optional)"
                     :state="validateState('longitude')"
                 />
 
@@ -115,14 +115,12 @@ export default {
                 }),
             },
             latitude: {
-                required,
                 decimal,
                 minValue: minValue(-90),
                 maxValue: maxValue(90),
                 maxLength: maxLength(10),
             },
             longitude: {
-                required,
                 decimal,
                 minValue: minValue(-180),
                 maxValue: maxValue(180),
@@ -168,9 +166,7 @@ export default {
             }
         },
         latitudeOrLongitudeInvalidFeedback(type) {
-            return !this.$v[type].required
-                ? `This field is required`
-                : !this.$v[type].decimal
+            return !this.$v[type].decimal
                 ? `The ${type} must be decimal`
                 : !this.$v[type].minValue
                 ? `The ${type} must be at least ${
