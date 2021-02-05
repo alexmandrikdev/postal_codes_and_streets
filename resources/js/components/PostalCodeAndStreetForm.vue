@@ -161,7 +161,7 @@ export default {
             }
 
             const { $dirty, $error } = this.$v[name];
-            return $dirty ? !$error : null;
+            return !$dirty ? null : $error ? false : null;
         },
         add() {
             this.$v.$touch();
