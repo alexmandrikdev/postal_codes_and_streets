@@ -126,7 +126,7 @@ export default {
                 decimal,
                 minValue: minValue(-180),
                 maxValue: maxValue(180),
-                maxLength: maxLength(10),
+                maxLength: maxLength(11),
             },
         };
 
@@ -181,7 +181,7 @@ export default {
                       type === 'latitude' ? 90 : 180
                   }`
                 : !this.$v[type].maxLength
-                ? `The ${type}'s precision must be at most 7 number`
+                ? `The ${type}'s scale must be at most 7`
                 : '';
         },
     },
