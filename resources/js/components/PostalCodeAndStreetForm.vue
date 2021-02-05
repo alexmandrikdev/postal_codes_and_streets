@@ -19,25 +19,31 @@
 
             <b-form-group class="mx-2">
                 <b-form-input
-                    v-model="$v.name.$model"
-                    :placeholder="nameInputPlaceholder"
-                    :state="validateState('name')"
+                    v-model="$v.postalCode.$model"
+                    placeholder="Postal Code"
+                    :state="validateState('postalCode')"
                 />
 
                 <b-form-invalid-feedback
-                    >{{ nameInvalidFeedback }}
+                    >{{ postalCodeInvalidFeedback }}
                 </b-form-invalid-feedback>
             </b-form-group>
 
-            <b-form-group v-if="type === 'postalCode'" class="mx-2">
+            <b-form-group class="mx-2">
                 <b-form-input
-                    v-model="$v.locality.$model"
-                    placeholder="Locality"
-                    :state="validateState('locality')"
+                    v-model="$v.localityOrStreet.$model"
+                    :placeholder="
+                        type === 'street'
+                            ? 'Street'
+                            : type === 'postalCode'
+                            ? 'Locality'
+                            : 'Locality Or Street'
+                    "
+                    :state="validateState('localityOrStreet')"
                 />
 
                 <b-form-invalid-feedback
-                    >{{ nameInvalidFeedback }}
+                    >{{ localityOrStreetInvalidFeedback }}
                 </b-form-invalid-feedback>
             </b-form-group>
 
@@ -82,7 +88,6 @@ import {
     maxValue,
     numeric,
     decimal,
-    requiredIf,
 } from 'vuelidate/lib/validators';
 
 export default {
@@ -95,62 +100,54 @@ export default {
                 { value: 'postalCode', text: 'Postal Code' },
                 { value: 'street', text: 'Street' },
             ],
-            name: '',
-            locality: '',
+            postalCode: '',
+            localityOrStreet: '',
             latitude: '',
             longitude: '',
         };
     },
-    validations() {
-        const validations = {
-            type: {
-                required,
-            },
-            name: {
-                required,
-            },
-            locality: {
-                required: requiredIf(function() {
-                    return this.type === 'postalCode';
-                }),
-            },
-            latitude: {
-                decimal,
-                minValue: minValue(-90),
-                maxValue: maxValue(90),
-                maxLength: maxLength(10),
-            },
-            longitude: {
-                decimal,
-                minValue: minValue(-180),
-                maxValue: maxValue(180),
-                maxLength: maxLength(11),
-            },
-        };
-
-        if (this.type === 'postalCode') {
-            validations.name.minLength = minLength(5);
-            validations.name.maxLength = maxLength(5);
-            validations.name.numeric = numeric;
-        }
-
-        return validations;
+    validations: {
+        type: {
+            required,
+        },
+        postalCode: {
+            required,
+            minLength: minLength(5),
+            maxLength: maxLength(5),
+            numeric,
+        },
+        localityOrStreet: {
+            required,
+            maxLength: maxLength(255),
+        },
+        latitude: {
+            decimal,
+            minValue: minValue(-90),
+            maxValue: maxValue(90),
+            maxLength: maxLength(10),
+        },
+        longitude: {
+            decimal,
+            minValue: minValue(-180),
+            maxValue: maxValue(180),
+            maxLength: maxLength(11),
+        },
     },
     computed: {
-        nameInputPlaceholder() {
-            return this.type === 'postalCode'
-                ? 'Postal Code'
-                : this.type === 'street'
-                ? 'Street'
-                : 'Postal Code or Street';
-        },
-        nameInvalidFeedback() {
-            return !this.$v.name.required
+        postalCodeInvalidFeedback() {
+            return !this.$v.postalCode.required
                 ? 'This field is required'
-                : !this.$v.name.numeric
+                : !this.$v.postalCode.numeric
                 ? 'The postal code must be numeric'
-                : !this.$v.name.minLength || !this.$v.name.maxLength
+                : !this.$v.postalCode.minLength || !this.$v.postalCode.maxLength
                 ? 'The postal code must be 5 digit'
+                : '';
+        },
+        localityOrStreetInvalidFeedback() {
+            return !this.$v.localityOrStreet.required
+                ? 'This field is required'
+                : !this.$v.localityOrStreet.maxLength
+                ? 'This value must me at most 255 characters'
                 : '';
         },
     },
@@ -168,8 +165,8 @@ export default {
             if (this.type === 'postalCode') {
                 axios
                     .post('/api/v1/postal_codes', {
-                        postal_code: this.name,
-                        locality: this.locality,
+                        postal_code: this.postalCode,
+                        locality: this.localityOrStreet,
                         latitude: this.latitude,
                         longitude: this.longitude,
                     })
@@ -179,8 +176,8 @@ export default {
             }
         },
         resetForm() {
-            this.name = '';
-            this.locality = '';
+            this.postalCode = '';
+            this.localityOrStreet = '';
             this.latitude = '';
             this.longitude = '';
 
