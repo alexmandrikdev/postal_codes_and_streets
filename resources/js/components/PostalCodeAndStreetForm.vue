@@ -174,6 +174,19 @@ export default {
                         this.resetForm();
                     });
             }
+
+            if (this.type === 'street') {
+                axios
+                    .post('/api/v1/streets', {
+                        postal_code: this.postalCode,
+                        name: this.localityOrStreet,
+                        latitude: this.latitude,
+                        longitude: this.longitude,
+                    })
+                    .then(() => {
+                        this.resetForm();
+                    });
+            }
         },
         resetForm() {
             this.postalCode = '';
