@@ -29,6 +29,18 @@
                 </b-form-invalid-feedback>
             </b-form-group>
 
+            <b-form-group v-if="type === 'postalCode'" class="mx-2">
+                <b-form-input
+                    v-model="$v.locality.$model"
+                    placeholder="Locality"
+                    :state="validateState('locality')"
+                />
+
+                <b-form-invalid-feedback
+                    >{{ nameInvalidFeedback }}
+                </b-form-invalid-feedback>
+            </b-form-group>
+
             <b-form-group class="mx-2">
                 <b-form-input
                     v-model="$v.latitude.$model"
@@ -70,6 +82,7 @@ import {
     maxValue,
     numeric,
     decimal,
+    requiredIf,
 } from 'vuelidate/lib/validators';
 
 export default {
@@ -83,6 +96,7 @@ export default {
                 { value: 'street', text: 'Street' },
             ],
             name: '',
+            locality: '',
             latitude: '',
             longitude: '',
         };
@@ -94,6 +108,11 @@ export default {
             },
             name: {
                 required,
+            },
+            locality: {
+                required: requiredIf(function() {
+                    return this.type === 'postalCode';
+                }),
             },
             latitude: {
                 required,
