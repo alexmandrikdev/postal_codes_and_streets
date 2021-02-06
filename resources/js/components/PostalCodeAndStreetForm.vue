@@ -29,14 +29,22 @@
                     v-else
                     v-model="$v.postalCode.$model"
                     placeholder="Postal Code"
-                    :state="validateState('postalCode')"
+                    :input-class="
+                        validateState('postalCode') === false
+                            ? 'is-invalid'
+                            : ''
+                    "
                     :data="postalCodes"
                     :show-on-focus="true"
                     :serializer="data => data.postal_code"
                 />
 
                 <b-form-invalid-feedback
-                    >{{ postalCodeInvalidFeedback }}
+                    :class="{
+                        'd-block': validateState('postalCode') === false,
+                    }"
+                >
+                    {{ postalCodeInvalidFeedback }}
                 </b-form-invalid-feedback>
             </b-form-group>
 
