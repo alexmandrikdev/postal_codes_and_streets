@@ -56,7 +56,7 @@
 <script>
 import axios from 'axios';
 import { validationMixin } from 'vuelidate';
-import { minLength, maxLength, numeric } from 'vuelidate/lib/validators';
+import { maxLength, numeric } from 'vuelidate/lib/validators';
 import _debounce from 'lodash/debounce';
 
 export default {
