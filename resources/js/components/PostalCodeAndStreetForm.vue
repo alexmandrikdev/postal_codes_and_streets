@@ -100,6 +100,7 @@ import {
     numeric,
     decimal,
 } from 'vuelidate/lib/validators';
+import { notIn } from '../utilities/customValidators';
 import VueTypeaheadBootstrap from 'vue-typeahead-bootstrap';
 
 export default {
@@ -123,32 +124,42 @@ export default {
             postalCodes: [],
         };
     },
-    validations: {
-        type: {
-            required,
-        },
-        postalCode: {
-            required,
-            minLength: minLength(5),
-            maxLength: maxLength(5),
-            numeric,
-        },
-        localityOrStreet: {
-            required,
-            maxLength: maxLength(255),
-        },
-        latitude: {
-            decimal,
-            minValue: minValue(-90),
-            maxValue: maxValue(90),
-            maxLength: maxLength(10),
-        },
-        longitude: {
-            decimal,
-            minValue: minValue(-180),
-            maxValue: maxValue(180),
-            maxLength: maxLength(11),
-        },
+    validations() {
+        const validations = {
+            type: {
+                required,
+            },
+            postalCode: {
+                required,
+                minLength: minLength(5),
+                maxLength: maxLength(5),
+                numeric,
+            },
+            localityOrStreet: {
+                required,
+                maxLength: maxLength(255),
+            },
+            latitude: {
+                decimal,
+                minValue: minValue(-90),
+                maxValue: maxValue(90),
+                maxLength: maxLength(10),
+            },
+            longitude: {
+                decimal,
+                minValue: minValue(-180),
+                maxValue: maxValue(180),
+                maxLength: maxLength(11),
+            },
+        };
+
+        if (this.type === 'postalCode') {
+            validations.postalCode.notIn = notIn(
+                this.postalCodes.map(postalCode => postalCode.postal_code),
+            );
+        }
+
+        return validations;
     },
     computed: {
         postalCodeInvalidFeedback() {
@@ -159,6 +170,8 @@ export default {
                 : !this.$v.postalCode.minLength || !this.$v.postalCode.maxLength
                 ? 'The postal code must be 5 digit'
                 : this.postalCodehasAlreadyBeenTaken
+                ? 'The postal code has already added'
+                : !this.$v.postalCode.notIn
                 ? 'The postal code has already added'
                 : '';
         },
