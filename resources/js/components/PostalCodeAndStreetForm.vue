@@ -34,7 +34,7 @@
                             ? 'is-invalid'
                             : ''
                     "
-                    :data="postalCodes"
+                    :data="sortedPostalCodes"
                     :show-on-focus="true"
                     :serializer="data => data.postal_code"
                 />
@@ -189,6 +189,11 @@ export default {
                 : !this.$v.localityOrStreet.maxLength
                 ? 'This value must me at most 255 characters'
                 : '';
+        },
+        sortedPostalCodes() {
+            return [...this.postalCodes].sort(function(first, second) {
+                return first.postal_code > second.postal_code;
+            });
         },
     },
     mounted() {
