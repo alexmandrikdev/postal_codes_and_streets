@@ -19,9 +19,20 @@
 
             <b-form-group class="mx-2">
                 <b-form-input
+                    v-if="type === 'postalCode'"
                     v-model="$v.postalCode.$model"
                     placeholder="Postal Code"
                     :state="validateState('postalCode')"
+                />
+
+                <vue-typeahead-bootstrap
+                    v-else
+                    v-model="$v.postalCode.$model"
+                    placeholder="Postal Code"
+                    :state="validateState('postalCode')"
+                    :data="postalCodes"
+                    :show-on-focus="true"
+                    :serializer="data => data.postal_code"
                 />
 
                 <b-form-invalid-feedback
@@ -89,8 +100,12 @@ import {
     numeric,
     decimal,
 } from 'vuelidate/lib/validators';
+import VueTypeaheadBootstrap from 'vue-typeahead-bootstrap';
 
 export default {
+    components: {
+        VueTypeaheadBootstrap,
+    },
     mixins: [validationMixin],
     data() {
         return {
@@ -105,6 +120,7 @@ export default {
             latitude: '',
             longitude: '',
             postalCodehasAlreadyBeenTaken: false,
+            postalCodes: [],
         };
     },
     validations: {
@@ -154,6 +170,9 @@ export default {
                 : '';
         },
     },
+    mounted() {
+        this.fetchPostalCodes();
+    },
     methods: {
         validateState(name) {
             if (name === 'postalCode' && this.postalCodehasAlreadyBeenTaken) {
@@ -177,7 +196,9 @@ export default {
                         latitude: this.latitude,
                         longitude: this.longitude,
                     })
-                    .then(() => {
+                    .then(({ data }) => {
+                        this.postalCodes = data.all;
+
                         this.resetForm();
                     })
                     .catch(({ response }) => {
@@ -229,6 +250,11 @@ export default {
                 : !this.$v[type].maxLength
                 ? `The ${type}'s scale must be at most 7`
                 : '';
+        },
+        fetchPostalCodes() {
+            axios.get('/api/v1/postal_codes').then(({ data }) => {
+                this.postalCodes = data;
+            });
         },
     },
 };
