@@ -14,6 +14,9 @@ class PostalCodeController extends Controller
 
     public function store(PostalCodeStoreRequest $request)
     {
-        return PostalCode::create($request->validated());
+        return [
+            'created' => PostalCode::create($request->validated()),
+            'all' => PostalCode::all(),
+        ];
     }
 }
