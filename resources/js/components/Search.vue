@@ -5,27 +5,47 @@
             @submit.prevent="search"
         >
             <b-form-group class="mx-2">
-                <b-form-input
+                <vue-typeahead-bootstrap
                     v-model="$v.postalCode.$model"
                     placeholder="Postal Code"
-                    :state="validateState('postalCode')"
+                    :input-class="
+                        validateState('postalCode') === false
+                            ? 'is-invalid'
+                            : ''
+                    "
+                    :data="sortedPostalCodes"
+                    :show-on-focus="true"
                     @keyup="debounceSearch"
+                    @hit="search"
                 />
 
-                <b-form-invalid-feedback>
+                <b-form-invalid-feedback
+                    :class="{
+                        'd-block': validateState('postalCode') === false,
+                    }"
+                >
                     {{ postalCodeInvalidFeedback }}
                 </b-form-invalid-feedback>
             </b-form-group>
 
             <b-form-group class="mx-2">
-                <b-form-input
+                <vue-typeahead-bootstrap
                     v-model="$v.street.$model"
                     placeholder="Street"
-                    :state="validateState('street')"
+                    :input-class="
+                        validateState('street') === false ? 'is-invalid' : ''
+                    "
+                    :data="sortedStreets"
+                    :show-on-focus="true"
                     @keyup="debounceSearch"
+                    @hit="search"
                 />
 
-                <b-form-invalid-feedback>
+                <b-form-invalid-feedback
+                    :class="{
+                        'd-block': validateState('postalCode') === false,
+                    }"
+                >
                     The street must me at most 255 characters
                 </b-form-invalid-feedback>
             </b-form-group>
@@ -58,15 +78,18 @@ import axios from 'axios';
 import { validationMixin } from 'vuelidate';
 import { maxLength, numeric } from 'vuelidate/lib/validators';
 import _debounce from 'lodash/debounce';
+import VueTypeaheadBootstrap from 'vue-typeahead-bootstrap';
 
 export default {
+    components: {
+        VueTypeaheadBootstrap,
+    },
     mixins: [validationMixin],
     data() {
         return {
             postalCode: null,
             street: null,
             streets: [],
-
             perPage: 15,
             currentPage: 1,
         };
@@ -87,6 +110,12 @@ export default {
                 : !this.$v.postalCode.minLength || !this.$v.postalCode.maxLength
                 ? 'The postal code must be 5 digit'
                 : '';
+        },
+        sortedPostalCodes() {
+            return this.streets.map(street => street.postal_code).sort();
+        },
+        sortedStreets() {
+            return this.streets.map(street => street.name).sort();
         },
     },
     created() {
